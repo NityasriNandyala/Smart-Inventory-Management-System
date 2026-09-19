@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suppliers · Smart Inventory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-root"></div>
+  <div class="main">
+    <div id="topbar-root"></div>
+    <div class="content">
+
+      <div class="page-head">
+        <div>
+          <h2>Suppliers</h2>
+          <div class="desc">Keep track of who supplies your stock.</div>
+        </div>
+        <button class="btn btn-primary" id="add-btn">+ Add supplier</button>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Name</th><th>Phone</th><th>Email</th><th class="text-right">Actions</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-title">Add supplier</h3>
+      <button class="modal-close" id="modal-close">✕</button>
+    </div>
+    <form id="form">
+      <input type="hidden" id="record-id">
+      <div class="field"><label>Name</label><input type="text" id="f-name" required></div>
+      <div class="field"><label>Phone</label><input type="text" id="f-phone"></div>
+      <div class="field"><label>Email</label><input type="email" id="f-email"></div>
+      <div class="modal-foot">
+        <button type="button" class="btn" id="modal-cancel">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+<script>
+  App.renderShell('suppliers', 'Suppliers', 'Vendors');
+  const Entity = Storage.Suppliers;
+
+  function render() {
+    const items = Entity.all();
+    const tbody = Utils.qs('#tbody');
+    if (!items.length) { tbody.innerHTML = `<tr><td colspan="4"><div class="table-empty">No suppliers yet.</div></td></tr>`; return; }
+    tbody.innerHTML = items.map(c => `
+      <tr>
+        <td><strong>${c.name}</strong></td>
+        <td>${c.phone || '—'}</td>
+        <td>${c.email || '—'}</td>
+        <td class="text-right">
+          <button class="btn btn-ghost btn-sm" data-edit="${c.id}">Edit</button>
+          <button class="btn btn-ghost btn-sm" data-del="${c.id}">Delete</button>
+        </td>
+      </tr>`).join('');
+    Utils.qsa('[data-edit]', tbody).forEach(b => b.addEventListener('click', () => openModal(Entity.get(b.dataset.edit))));
+    Utils.qsa('[data-del]', tbody).forEach(b => b.addEventListener('click', () => {
+      if (Utils.confirmAction('Delete this supplier?')) { Entity.delete(b.dataset.del); Utils.toast('Deleted', 'success'); render(); }
+    }));
+  }
+
+  function openModal(record) {
+    Utils.qs('#form').reset();
+    Utils.qs('#modal-title').textContent = record ? 'Edit supplier' : 'Add supplier';
+    Utils.qs('#record-id').value = record ? record.id : '';
+    Utils.qs('#f-name').value = record ? record.name : '';
+    Utils.qs('#f-phone').value = record ? record.phone || '' : '';
+    Utils.qs('#f-email').value = record ? record.email || '' : '';
+    Utils.qs('#modal').classList.add('is-open');
+  }
+  function closeModal() { Utils.qs('#modal').classList.remove('is-open'); }
+
+  Utils.qs('#add-btn').addEventListener('click', () => openModal(null));
+  Utils.qs('#modal-close').addEventListener('click', closeModal);
+  Utils.qs('#modal-cancel').addEventListener('click', closeModal);
+  Utils.qs('#form').addEventListener('submit', e => {
+    e.preventDefault();
+    const id = Utils.qs('#record-id').value;
+    const payload = { name: Utils.qs('#f-name').value.trim(), phone: Utils.qs('#f-phone').value.trim(), email: Utils.qs('#f-email').value.trim() };
+    if (!payload.name) { Utils.toast('Name is required', 'error'); return; }
+    if (id) Entity.update(id, payload); else Entity.add(Object.assign({ id: Utils.uid('sup') }, payload));
+    Utils.toast('Saved', 'success');
+    closeModal();
+    render();
+  });
+
+  Storage.on('suppliers_changed', () => render());
+  Storage.on('all_changed', () => render());
+
+  render();
+</script>
+</body>
+</html>

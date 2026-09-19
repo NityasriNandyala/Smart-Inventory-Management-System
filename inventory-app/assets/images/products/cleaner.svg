@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="cleanBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fdf4ff"/>
+      <stop offset="100%" stop-color="#f5d0fe"/>
+    </linearGradient>
+    <linearGradient id="sprayBottle" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a855f7"/>
+      <stop offset="100%" stop-color="#9333ea"/>
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="16" fill="url(#cleanBg)"/>
+  <!-- Spray nozzle -->
+  <path d="M46 22 L60 22 L64 26 L64 30 L48 30 L46 38 L42 38 L42 30 L36 30 L36 26 Z" fill="#0284c7"/>
+  <rect x="42" y="30" width="14" height="6" fill="#e2e8f0"/>
+  <!-- Bottle bottle neck & body -->
+  <path d="M42 36 L56 36 L62 52 L62 76 C62 80 58 82 50 82 C42 82 36 80 36 76 L36 52 Z" fill="url(#sprayBottle)"/>
+  <!-- Label -->
+  <rect x="40" y="56" width="18" height="16" rx="2" fill="#ffffff" opacity="0.9"/>
+  <!-- Sparkles -->
+  <path d="M68 40 L70 36 L72 40 L76 42 L72 44 L70 48 L68 44 L64 42 Z" fill="#facc15"/>
+</svg>

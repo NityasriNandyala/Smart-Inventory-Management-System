@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · Smart Inventory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-root"></div>
+  <div class="main">
+    <div id="topbar-root"></div>
+    <div class="content">
+
+      <div class="page-head">
+        <div>
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:4px;">
+            <h2>Dashboard</h2>
+            <div class="live-badge" title="Changes synchronize in real-time across tabs and devices">
+              <span class="live-dot"></span> Real-Time Sync
+            </div>
+          </div>
+          <div class="desc">Here's how the store is doing today.</div>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Products</div>
+          <div class="stat-value" id="stat-total-products">0</div>
+          <div class="stat-sub" id="stat-total-products-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Sales</div>
+          <div class="stat-value" id="stat-total-sales">$0</div>
+          <div class="stat-sub" id="stat-total-sales-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Today's Sales</div>
+          <div class="stat-value" id="stat-today-sales">$0</div>
+          <div class="stat-sub" id="stat-today-sales-sub"></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Low Stock Items</div>
+          <div class="stat-value" id="stat-low-stock">0</div>
+          <div class="stat-sub" id="stat-low-stock-sub"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card chart-card">
+          <div class="card-head">
+            <h3>Sales, last 7 days</h3>
+            <span class="chart-legend">Daily invoice totals</span>
+          </div>
+          <div class="bar-chart" id="sales-chart"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h3>Low stock alerts</h3>
+            <a href="products.html" class="btn btn-ghost btn-sm">View products</a>
+          </div>
+          <div id="low-stock-list"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:18px;">
+        <div class="card-head">
+          <h3>Recent transactions</h3>
+          <a href="sales.html" class="btn btn-ghost btn-sm">View all sales</a>
+        </div>
+        <div class="activity-list" id="recent-transactions"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+<script>
+  App.renderShell('dashboard', 'Dashboard', 'Overview');
+  App.initDashboard();
+</script>
+</body>
+</html>

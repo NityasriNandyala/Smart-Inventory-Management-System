@@ -1,0 +1,16 @@
+{
+  "note": "This file is a reference example only. The live app does not read from here — all data lives in the browser's localStorage and is created automatically the first time you open index.html.",
+  "products": [
+    { "id": "prd-example1", "name": "Ceylon Black Tea 250g", "category": "Beverages", "barcode": "8901030", "price": 4.5, "cost": 2.6, "stock": 42, "lowStockThreshold": 10 }
+  ],
+  "customers": [
+    { "id": "cus-example1", "name": "Walk-in Customer", "phone": "", "email": "" }
+  ],
+  "suppliers": [
+    { "id": "sup-example1", "name": "Sunrise Distributors", "phone": "", "email": "" }
+  ],
+  "sales": [],
+  "purchases": [],
+  "stockHistory": [],
+  "settings": { "storeName": "My Store", "currency": "USD", "taxRate": 5, "theme": "light" }
+}

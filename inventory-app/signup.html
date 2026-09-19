@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account · Smart Inventory Management System</title>
+<meta name="description" content="Create your Smart Inventory Management System account to manage stock, sales, and purchases in real-time.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+<style>
+  /* ─── Auth Layout ─── */
+  body { margin: 0; min-height: 100vh; }
+
+  .auth-split {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── Left hero panel ── */
+  .auth-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #0F766E 0%, #1E3A8A 50%, #0F172A 100%);
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .auth-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 80% 80%, rgba(37,99,235,0.35) 0%, transparent 55%),
+      radial-gradient(ellipse at 20% 20%, rgba(15,118,110,0.35) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  .hero-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.06);
+    pointer-events: none;
+  }
+  .hero-ring-1 { width: 500px; height: 500px; bottom: -180px; left: -180px; }
+  .hero-ring-2 { width: 320px; height: 320px; top: -100px; right: -100px; }
+  .hero-ring-3 { width: 200px; height: 200px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 420px;
+  }
+
+  .hero-logo-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 150px;
+    background: rgba(255,255,255,0.10);
+    border: 2px solid rgba(255,255,255,0.18);
+    border-radius: 28px;
+    margin-bottom: 24px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .hero-logo-wrap img {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.25));
+  }
+
+  .hero-brand-name {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 6px;
+    letter-spacing: -0.3px;
+  }
+
+  .hero-brand-sub {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.60);
+    margin: 0 0 32px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .hero-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: left;
+  }
+  .hero-step {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .hero-step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: 1.5px solid rgba(255,255,255,0.25);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .hero-step-text {
+    color: rgba(255,255,255,0.75);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+  .hero-step-text strong { color: #fff; }
+
+  .hero-badges {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+  }
+  .hero-badge {
+    background: rgba(255,255,255,0.10);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.75);
+    backdrop-filter: blur(8px);
+  }
+
+  /* ── Right form panel ── */
+  .auth-form-panel {
+    width: 500px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 44px;
+    background: var(--paper);
+    overflow-y: auto;
+  }
+
+  .auth-form-inner {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .auth-form-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .auth-form-logo img {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+  }
+  .auth-form-logo-text strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 15px;
+    color: var(--ink);
+  }
+  .auth-form-logo-text span {
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .auth-heading { font-size: 21px; margin: 0 0 4px; }
+  .auth-subhead { font-size: 13px; color: var(--ink-soft); margin: 0 0 22px; line-height: 1.5; }
+
+  .password-wrap { position: relative; }
+  .toggle-pwd {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--ink-faint);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+  .toggle-pwd:hover { color: var(--ink); }
+
+  .terms-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 20px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+  }
+  .terms-row input { width: auto; margin-top: 2px; flex-shrink: 0; }
+
+  .auth-footer {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+  }
+  .auth-footer a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .auth-footer a:hover { text-decoration: underline; }
+
+  /* Password strength bar */
+  .pwd-strength {
+    height: 3px;
+    border-radius: 3px;
+    background: var(--line);
+    margin-top: 6px;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .pwd-strength-bar {
+    height: 100%;
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.3s, background 0.3s;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 860px) {
+    .auth-split { flex-direction: column; }
+    .auth-hero {
+      min-height: 220px;
+      padding: 32px 24px;
+    }
+    .hero-steps, .hero-badges { display: none; }
+    .hero-logo-wrap { width: 100px; height: 100px; margin-bottom: 16px; animation: none; }
+    .hero-logo-wrap img { width: 72px; height: 72px; }
+    .hero-brand-name { font-size: 20px; }
+    .hero-brand-sub { margin-bottom: 0; }
+    .auth-form-panel { width: 100%; padding: 32px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="auth-split">
+
+  <!-- ── Left hero panel ── -->
+  <div class="auth-hero">
+    <div class="hero-ring hero-ring-1"></div>
+    <div class="hero-ring hero-ring-2"></div>
+    <div class="hero-ring hero-ring-3"></div>
+
+    <div class="hero-content">
+      <div class="hero-logo-wrap">
+        <img src="assets/images/logo.png" alt="Smart Inventory Logo">
+      </div>
+      <h1 class="hero-brand-name">Smart Inventory</h1>
+      <p class="hero-brand-sub">Management System</p>
+
+      <div class="hero-steps">
+        <div class="hero-step">
+          <div class="hero-step-num">1</div>
+          <div class="hero-step-text"><strong>Create your account</strong> — takes under 30 seconds.</div>
+        </div>
+        <div class="hero-step">
+          <div class="hero-step-num">2</div>
+          <div class="hero-step-text"><strong>Add your products</strong> — with images and stock levels.</div>
+        </div>
+        <div class="hero-step">
+          <div class="hero-step-num">3</div>
+          <div class="hero-step-text"><strong>Track sales & purchases</strong> — in real time.</div>
+        </div>
+        <div class="hero-step">
+          <div class="hero-step-num">4</div>
+          <div class="hero-step-text"><strong>Get smart alerts</strong> — for low stock & anomalies.</div>
+        </div>
+      </div>
+
+      <div class="hero-badges">
+        <div class="hero-badge">🔒 Secure & Private</div>
+        <div class="hero-badge">⚡ Real-Time Sync</div>
+        <div class="hero-badge">🌙 Dark Mode</div>
+        <div class="hero-badge">📱 Responsive</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Right form panel ── -->
+  <div class="auth-form-panel">
+    <div class="auth-form-inner">
+
+      <div class="auth-form-logo">
+        <img src="assets/images/logo.png" alt="Logo">
+        <div class="auth-form-logo-text">
+          <strong>Smart Inventory</strong>
+          <span>Management System</span>
+        </div>
+      </div>
+
+      <h2 class="auth-heading">Create your account</h2>
+      <p class="auth-subhead">Start managing your catalog, stock, sales and purchases right away.</p>
+
+      <form id="signup-form">
+        <div class="field-row">
+          <div class="field">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" required placeholder="Jane Doe" autofocus>
+          </div>
+          <div class="field">
+            <label for="store-name">Store / Business Name</label>
+            <input type="text" id="store-name" required placeholder="Sunrise Wholesale">
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" required placeholder="jane@example.com">
+          </div>
+          <div class="field">
+            <label for="role">Role</label>
+            <select id="role">
+              <option value="Administrator">Administrator</option>
+              <option value="Inventory Manager">Inventory Manager</option>
+              <option value="Cashier">Cashier / Staff</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="password-wrap">
+              <input type="password" id="password" required placeholder="Min. 6 characters" minlength="6">
+              <button type="button" class="toggle-pwd" id="toggle-pwd" title="Show password">👁</button>
+            </div>
+            <div class="pwd-strength" id="pwd-strength-bar-wrap">
+              <div class="pwd-strength-bar" id="pwd-strength-bar"></div>
+            </div>
+            <div class="field-hint" id="pwd-hint"></div>
+          </div>
+          <div class="field">
+            <label for="confirm-password">Confirm Password</label>
+            <div class="password-wrap">
+              <input type="password" id="confirm-password" required placeholder="Repeat password">
+              <button type="button" class="toggle-pwd" id="toggle-pwd-confirm" title="Show password">👁</button>
+            </div>
+            <div class="field-hint" id="confirm-hint" style="color:var(--bad);"></div>
+          </div>
+        </div>
+
+        <div class="terms-row">
+          <input type="checkbox" id="terms" required checked>
+          <label for="terms">I agree to store inventory data locally in this browser with secure session management. Your data never leaves your device.</label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="signup-btn"
+          style="width:100%; padding:11px; font-size:15px; font-weight:600;">
+          Create store account →
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Already have an account? <a href="login.html">Sign in here</a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  // Theme on auth pages
+  (function() {
+    try {
+      const s = JSON.parse(localStorage.getItem('sims_settings') || '{}');
+      if (s.theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    } catch(e) {}
+  })();
+
+  // If already logged in, redirect to dashboard
+  if (Auth.getCurrentUser()) {
+    window.location.href = 'index.html';
+  }
+
+  // Toggle password visibility — main
+  const pwdInput = Utils.qs('#password');
+  const confirmPwdInput = Utils.qs('#confirm-password');
+  Utils.qs('#toggle-pwd').addEventListener('click', () => {
+    const isPwd = pwdInput.type === 'password';
+    pwdInput.type = isPwd ? 'text' : 'password';
+    Utils.qs('#toggle-pwd').textContent = isPwd ? '🔒' : '👁';
+  });
+  Utils.qs('#toggle-pwd-confirm').addEventListener('click', () => {
+    const isPwd = confirmPwdInput.type === 'password';
+    confirmPwdInput.type = isPwd ? 'text' : 'password';
+    Utils.qs('#toggle-pwd-confirm').textContent = isPwd ? '🔒' : '👁';
+  });
+
+  // Password strength indicator
+  pwdInput.addEventListener('input', () => {
+    const v = pwdInput.value;
+    const bar = Utils.qs('#pwd-strength-bar');
+    const hint = Utils.qs('#pwd-hint');
+    let strength = 0;
+    let label = '';
+    let color = '';
+    if (v.length >= 6) strength++;
+    if (v.length >= 10) strength++;
+    if (/[A-Z]/.test(v)) strength++;
+    if (/[0-9]/.test(v)) strength++;
+    if (/[^A-Za-z0-9]/.test(v)) strength++;
+
+    const pct = ['0%','20%','40%','60%','80%','100%'][strength];
+    const colors = ['','#DC2626','#F59E0B','#F59E0B','#16A34A','#16A34A'];
+    const labels = ['','Weak','Fair','Fair','Strong','Very Strong'];
+    bar.style.width = pct;
+    bar.style.background = colors[strength] || '';
+    hint.textContent = v.length > 0 ? labels[strength] : '';
+    hint.style.color = colors[strength] || '';
+  });
+
+  // Confirm password match hint
+  confirmPwdInput.addEventListener('input', () => {
+    const hint = Utils.qs('#confirm-hint');
+    if (confirmPwdInput.value && confirmPwdInput.value !== pwdInput.value) {
+      hint.textContent = 'Passwords do not match';
+    } else if (confirmPwdInput.value && confirmPwdInput.value === pwdInput.value) {
+      hint.textContent = '✓ Passwords match';
+      hint.style.color = 'var(--good)';
+    } else {
+      hint.textContent = '';
+    }
+  });
+
+  // Sign-up submission
+  Utils.qs('#signup-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const name = Utils.qs('#name').value.trim();
+    const storeName = Utils.qs('#store-name').value.trim();
+    const email = Utils.qs('#email').value.trim();
+    const role = Utils.qs('#role').value;
+    const password = pwdInput.value;
+    const confirm = confirmPwdInput.value;
+    const btn = Utils.qs('#signup-btn');
+
+    if (password !== confirm) {
+      Utils.playChime && Utils.playChime('alert');
+      Utils.toast('Passwords do not match', 'error');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Creating account…';
+
+    try {
+      await Auth.register({ name, storeName, email, role, password });
+      Utils.playChime && Utils.playChime('success');
+      Utils.toast(`Welcome to Smart Inventory, ${name}! 🎉`, 'success');
+      setTimeout(() => { window.location.href = 'index.html'; }, 700);
+    } catch (err) {
+      Utils.playChime && Utils.playChime('alert');
+      Utils.toast(err.message || 'Registration failed', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Create store account →';
+    }
+  });
+</script>
+</body>
+</html>

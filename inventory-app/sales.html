@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales · Smart Inventory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-root"></div>
+  <div class="main">
+    <div id="topbar-root"></div>
+    <div class="content">
+
+      <div class="page-head">
+        <div>
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:4px;">
+            <h2>Sales</h2>
+            <div class="live-badge" title="Changes synchronize in real-time across tabs and devices">
+              <span class="live-dot"></span> Real-Time Sync
+            </div>
+          </div>
+          <div class="desc">Create invoices and review sales history with real-time stock sync.</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><h3>Create invoice</h3></div>
+
+          <div class="field-row">
+            <div class="field">
+              <label>Customer</label>
+              <select id="sale-customer"></select>
+            </div>
+          </div>
+
+          <div class="field-row">
+            <div class="field" style="flex:2;">
+              <label>Product</label>
+              <select id="sale-product"></select>
+            </div>
+            <div class="field">
+              <label>Quantity</label>
+              <input type="number" id="sale-qty" min="1" value="1">
+            </div>
+          </div>
+          <button class="btn btn-primary" id="add-to-cart-btn" style="margin-bottom:16px;">Add to invoice</button>
+
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Item</th><th>Price</th><th>Qty</th><th>Amount</th><th></th></tr></thead>
+              <tbody id="cart-tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="field-row" style="margin-top:16px;">
+            <div class="field">
+              <label>Discount (flat amount)</label>
+              <input type="number" id="sale-discount" min="0" value="0" step="0.01">
+            </div>
+            <div class="field">
+              <label style="display:flex; align-items:center; gap:8px;">
+                <input type="checkbox" id="apply-tax" checked style="width:auto;"> Apply store tax rate
+              </label>
+            </div>
+          </div>
+
+          <div class="invoice-totals" style="width:100%; max-width:320px; margin-left:auto;">
+            <div><span>Subtotal</span><span id="sum-subtotal">$0.00</span></div>
+            <div><span>Tax</span><span id="sum-tax">$0.00</span></div>
+            <div class="grand"><span>Total</span><span id="sum-total">$0.00</span></div>
+          </div>
+
+          <div class="modal-foot">
+            <button class="btn" id="clear-cart-btn">Clear</button>
+            <button class="btn btn-primary" id="save-sale-btn" disabled>Save invoice</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Sales history</h3></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th></th></tr></thead>
+              <tbody id="sales-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Invoice / print modal -->
+<div class="modal-overlay" id="invoice-modal">
+  <div class="modal modal-wide">
+    <div class="modal-head">
+      <h3>Invoice</h3>
+      <button class="modal-close" id="invoice-modal-close">✕</button>
+    </div>
+    <div id="print-area"></div>
+    <div class="modal-foot">
+      <button class="btn" id="invoice-modal-close-2" onclick="document.getElementById('invoice-modal').classList.remove('is-open')">Close</button>
+      <button class="btn btn-primary" id="print-invoice-btn">Print invoice</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+<script src="js/inventory.js"></script>
+<script src="js/sales.js"></script>
+<script>
+  App.renderShell('sales', 'Sales', 'Invoices', { search: true, searchPlaceholder: 'Search sales history…' });
+  SalesPage.init();
+</script>
+</body>
+</html>

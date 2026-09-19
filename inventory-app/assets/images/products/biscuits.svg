@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="biscBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff7ed"/>
+      <stop offset="100%" stop-color="#fed7aa"/>
+    </linearGradient>
+    <linearGradient id="cookie" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ea580c"/>
+      <stop offset="100%" stop-color="#c2410c"/>
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="16" fill="url(#biscBg)"/>
+  <!-- Biscuit cookie -->
+  <circle cx="50" cy="50" r="30" fill="url(#cookie)"/>
+  <circle cx="50" cy="50" r="26" fill="none" stroke="#f97316" stroke-width="1.5" stroke-dasharray="3 3"/>
+  <!-- Cookie dots -->
+  <circle cx="42" cy="40" r="3" fill="#7c2d12"/>
+  <circle cx="58" cy="38" r="2.5" fill="#7c2d12"/>
+  <circle cx="50" cy="50" r="3" fill="#7c2d12"/>
+  <circle cx="38" cy="58" r="2.5" fill="#7c2d12"/>
+  <circle cx="56" cy="62" r="3" fill="#7c2d12"/>
+  <circle cx="62" cy="50" r="2" fill="#7c2d12"/>
+  <circle cx="38" cy="48" r="2" fill="#7c2d12"/>
+</svg>

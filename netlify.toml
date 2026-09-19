@@ -1,0 +1,8 @@
+[build]
+  publish = "inventory-app"
+
+[[redirects]]
+  from = "/"
+  to = "/login.html"
+  status = 302
+  force = false

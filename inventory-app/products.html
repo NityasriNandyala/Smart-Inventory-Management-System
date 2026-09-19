@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Products · Smart Inventory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-root"></div>
+  <div class="main">
+    <div id="topbar-root"></div>
+    <div class="content">
+
+      <div class="page-head">
+        <div>
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:4px;">
+            <h2>Products</h2>
+            <div class="live-badge" title="Changes synchronize in real-time across tabs and devices">
+              <span class="live-dot"></span> Real-Time Sync
+            </div>
+          </div>
+          <div class="desc">Manage your product catalog, image gallery, barcodes, and stock levels.</div>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn" id="export-products-csv-btn">Export CSV</button>
+          <button class="btn" id="import-csv-btn">Import CSV</button>
+          <input type="file" id="csv-file-input" accept=".csv" style="display:none;">
+          <button class="btn btn-primary" id="add-product-btn">+ Add product</button>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <input type="text" id="product-search" placeholder="Search by name or barcode… (or press /)" style="min-width:260px;">
+        <select id="category-filter"></select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:60px;">Image</th>
+              <th>Product</th>
+              <th>Category</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Status</th>
+              <th>Reorder at</th>
+              <th class="text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="products-tbody"></tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit product modal with Product Image Support -->
+<div class="modal-overlay" id="product-modal">
+  <div class="modal modal-wide">
+    <div class="modal-head">
+      <h3 id="product-modal-title">Add product</h3>
+      <button class="modal-close" id="product-modal-close">✕</button>
+    </div>
+    <form id="product-form">
+      <input type="hidden" id="product-id">
+
+      <!-- Product Image Selector / Uploader -->
+      <div class="field">
+        <label>Product Image</label>
+        <div class="image-upload-wrap">
+          <img id="product-image-preview" class="product-thumb-lg" src="assets/images/products/placeholder.svg" alt="Preview">
+          <div class="image-upload-controls">
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <label class="btn btn-sm" style="cursor:pointer; margin:0;">
+                Upload image
+                <input type="file" id="product-image-file" accept="image/*" style="display:none;">
+              </label>
+              <button type="button" class="btn btn-ghost btn-sm" id="product-image-clear">Reset</button>
+            </div>
+            <input type="text" id="product-image-url" placeholder="Or enter image URL (e.g. assets/images/products/tea.svg)" style="font-size:12.5px;">
+            <div>
+              <span class="field-hint" style="display:block; margin-bottom:4px;">Quick preset images:</span>
+              <div class="preset-list" id="preset-images-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Product name</label>
+        <input type="text" id="product-name" required placeholder="e.g. Ceylon Black Tea 250g">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Category</label>
+          <input type="text" id="product-category" placeholder="e.g. Beverages">
+        </div>
+        <div class="field">
+          <label>Barcode / SKU</label>
+          <input type="text" id="product-barcode" placeholder="e.g. 8901030">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Selling price</label>
+          <input type="number" step="0.01" min="0" id="product-price" required>
+        </div>
+        <div class="field">
+          <label>Cost price</label>
+          <input type="number" step="0.01" min="0" id="product-cost">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Opening stock</label>
+          <input type="number" min="0" id="product-stock">
+        </div>
+        <div class="field">
+          <label>Low stock alert at</label>
+          <input type="number" min="0" id="product-threshold">
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn" id="product-modal-cancel">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save product</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Barcode & QR Code Modal -->
+<div class="modal-overlay" id="code-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Barcode & QR Code Label</h3>
+      <button class="modal-close" id="code-modal-close">✕</button>
+    </div>
+    <div id="code-modal-content" style="display:flex; flex-direction:column; gap:16px; align-items:center;">
+      <div style="display:flex; align-items:center; gap:12px; width:100%; justify-content:center;">
+        <img id="code-modal-thumb" class="product-thumb" src="" alt="">
+        <div>
+          <h4 id="code-modal-name" style="margin:0;"></h4>
+          <span id="code-modal-details" class="field-hint"></span>
+        </div>
+      </div>
+      <div class="code-preview-card" style="width:100%; max-width:340px;">
+        <div style="font-size:11px; text-transform:uppercase; color:var(--ink-faint); margin-bottom:8px; font-weight:600;">Barcode (Code 39)</div>
+        <div id="barcode-container" style="overflow-x:auto;"></div>
+      </div>
+      <div class="code-preview-card" style="width:100%; max-width:340px;">
+        <div style="font-size:11px; text-transform:uppercase; color:var(--ink-faint); margin-bottom:8px; font-weight:600;">QR Code</div>
+        <div id="qrcode-container" style="display:flex; justify-content:center;"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn" id="code-modal-close-btn">Close</button>
+      <button type="button" class="btn btn-primary" id="code-modal-print-btn">Print Label</button>
+    </div>
+  </div>
+</div>
+
+<!-- Stock adjust modal -->
+<div class="modal-overlay" id="stock-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Adjust stock</h3>
+      <button class="modal-close" id="stock-modal-close">✕</button>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+      <img id="stock-modal-thumb" class="product-thumb" src="" alt="">
+      <div>
+        <p id="stock-modal-product-name" style="font-weight:600; margin:0;"></p>
+        <p class="field-hint" id="stock-modal-current" style="margin:0;"></p>
+      </div>
+    </div>
+    <form id="stock-form">
+      <div class="field">
+        <label>Movement type</label>
+        <div style="display:flex; gap:16px; margin-top:4px;">
+          <label style="display:flex; align-items:center; gap:6px; font-weight:400;"><input type="radio" name="stock-type" value="in" checked> Stock in</label>
+          <label style="display:flex; align-items:center; gap:6px; font-weight:400;"><input type="radio" name="stock-type" value="out"> Stock out</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Quantity</label>
+        <input type="number" min="1" id="stock-qty" required>
+      </div>
+      <div class="field">
+        <label>Reason / note (optional)</label>
+        <input type="text" id="stock-reason" placeholder="e.g. Damaged, returned, recount">
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn" id="stock-modal-cancel">Cancel</button>
+        <button type="submit" class="btn btn-primary">Update stock</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Stock history modal -->
+<div class="modal-overlay" id="history-modal">
+  <div class="modal modal-wide">
+    <div class="modal-head">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <img id="history-modal-thumb" class="product-thumb-sm" src="" alt="">
+        <h3>Stock history — <span id="history-modal-product-name"></span></h3>
+      </div>
+      <button class="modal-close" id="history-modal-close">✕</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Type</th><th>Qty</th><th>Reason</th></tr></thead>
+        <tbody id="history-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+<script src="js/inventory.js"></script>
+<script src="js/products.js"></script>
+<script>
+  App.renderShell('products', 'Products', 'Catalog', { search: false });
+  ProductsPage.init();
+</script>
+</body>
+</html>

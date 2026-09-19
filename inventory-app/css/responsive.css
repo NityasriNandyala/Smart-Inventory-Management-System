@@ -1,0 +1,43 @@
+/* responsive.css — breakpoints */
+
+@media (max-width: 1080px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 860px) {
+  :root { --sidebar-w: 210px; }
+  .content { padding: 16px; }
+  .topbar { padding: 0 16px; }
+  .topbar-search { display: none; }
+}
+
+@media (max-width: 680px) {
+  .app-shell { flex-direction: column; }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+  }
+  .brand { border-right: 1px solid var(--line); border-bottom: none; flex-shrink: 0; }
+  .nav { display: flex; padding: 8px; overflow-x: auto; }
+  .nav-link { flex-shrink: 0; margin-bottom: 0; }
+  .nav-section-label { display: none; }
+  .sidebar-foot { display: none; }
+  .stat-grid { grid-template-columns: 1fr 1fr; }
+  .field-row { flex-direction: column; gap: 0; }
+  .topbar-title .eyebrow { display: none; }
+}
+
+@media (max-width: 460px) {
+  .stat-grid { grid-template-columns: 1fr; }
+  .page-head { flex-direction: column; align-items: flex-start; }
+  .modal { padding: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Purchases · Smart Inventory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+<div class="app-shell">
+  <div id="sidebar-root"></div>
+  <div class="main">
+    <div id="topbar-root"></div>
+    <div class="content">
+
+      <div class="page-head">
+        <div>
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:4px;">
+            <h2>Purchases</h2>
+            <div class="live-badge" title="Changes synchronize in real-time across tabs and devices">
+              <span class="live-dot"></span> Real-Time Sync
+            </div>
+          </div>
+          <div class="desc">Record incoming stock shipments from suppliers with real-time automatic inventory updates.</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head"><h3>New purchase entry</h3></div>
+
+          <div class="field">
+            <label>Supplier</label>
+            <select id="purchase-supplier"></select>
+          </div>
+
+          <div class="field-row">
+            <div class="field" style="flex:2;">
+              <label>Product</label>
+              <select id="purchase-product"></select>
+            </div>
+            <div class="field">
+              <label>Quantity</label>
+              <input type="number" id="purchase-qty" min="1" value="1">
+            </div>
+            <div class="field">
+              <label>Unit cost</label>
+              <input type="number" id="purchase-cost" min="0" step="0.01">
+            </div>
+          </div>
+          <button class="btn btn-primary" id="add-purchase-item-btn" style="margin-bottom:16px;">Add to purchase</button>
+
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Item</th><th>Unit cost</th><th>Qty</th><th>Amount</th><th></th></tr></thead>
+              <tbody id="purchase-cart-tbody"></tbody>
+            </table>
+          </div>
+
+          <div class="invoice-totals" style="width:100%; max-width:320px; margin-left:auto; margin-top:16px;">
+            <div class="grand"><span>Total cost</span><span id="purchase-total">$0.00</span></div>
+          </div>
+
+          <div class="modal-foot">
+            <button class="btn" id="clear-purchase-btn">Clear</button>
+            <button class="btn btn-primary" id="save-purchase-btn" disabled>Save & update stock</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3>Purchase history</h3></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Supplier</th><th>Items</th><th>Total</th></tr></thead>
+              <tbody id="purchases-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+<script src="js/inventory.js"></script>
+<script>
+  App.renderShell('purchases', 'Purchases', 'Restocking');
+
+  let purchaseCart = [];
+
+  function populateSupplierSelect() {
+    const select = Utils.qs('#purchase-supplier');
+    if (!select) return;
+    select.innerHTML = Storage.Suppliers.all().map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  }
+
+  function populateProductSelectForPurchase() {
+    const select = Utils.qs('#purchase-product');
+    if (!select) return;
+    select.innerHTML = '<option value="">Select a product…</option>' +
+      Storage.Products.all().map(p => `<option value="${p.id}">${p.name} (${p.stock} in stock)</option>`).join('');
+  }
+
+  Utils.qs('#purchase-product').addEventListener('change', e => {
+    const p = Storage.Products.get(e.target.value);
+    if (p) Utils.qs('#purchase-cost').value = p.cost || '';
+  });
+
+  Utils.qs('#add-purchase-item-btn').addEventListener('click', () => {
+    const productId = Utils.qs('#purchase-product').value;
+    const qty = Number(Utils.qs('#purchase-qty').value) || 1;
+    const cost = Number(Utils.qs('#purchase-cost').value) || 0;
+    if (!productId) { Utils.toast('Choose a product first', 'error'); return; }
+    const product = Storage.Products.get(productId);
+    const existing = purchaseCart.find(i => i.productId === productId);
+    if (existing) {
+      existing.qty += qty;
+      existing.cost = cost;
+    } else {
+      purchaseCart.push({
+        productId,
+        name: product.name,
+        qty,
+        cost,
+        image: product.image || 'assets/images/products/placeholder.svg'
+      });
+    }
+    Utils.qs('#purchase-qty').value = 1;
+    Utils.qs('#purchase-product').value = '';
+    Utils.qs('#purchase-cost').value = '';
+    renderPurchaseCart();
+  });
+
+  Utils.qs('#clear-purchase-btn').addEventListener('click', () => { purchaseCart = []; renderPurchaseCart(); });
+
+  function renderPurchaseCart() {
+    const tbody = Utils.qs('#purchase-cart-tbody');
+    if (!purchaseCart.length) {
+      tbody.innerHTML = `<tr><td colspan="5"><div class="table-empty">No items added yet.</div></td></tr>`;
+    } else {
+      tbody.innerHTML = purchaseCart.map(i => `
+        <tr>
+          <td>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <img src="${i.image || 'assets/images/products/placeholder.svg'}" class="product-thumb-sm" alt="${i.name}" onerror="this.src='assets/images/products/placeholder.svg'">
+              <span><strong>${i.name}</strong></span>
+            </div>
+          </td>
+          <td class="mono">${Utils.currency(i.cost)}</td>
+          <td class="mono">${i.qty}</td>
+          <td class="mono">${Utils.currency(i.cost * i.qty)}</td>
+          <td class="text-right"><button class="btn btn-ghost btn-sm" data-remove="${i.productId}">Remove</button></td>
+        </tr>`).join('');
+      Utils.qsa('[data-remove]', tbody).forEach(btn =>
+        btn.addEventListener('click', () => {
+          purchaseCart = purchaseCart.filter(i => i.productId !== btn.getAttribute('data-remove'));
+          renderPurchaseCart();
+        }));
+    }
+    const total = purchaseCart.reduce((sum, i) => sum + i.cost * i.qty, 0);
+    Utils.qs('#purchase-total').textContent = Utils.currency(total);
+    Utils.qs('#save-purchase-btn').disabled = purchaseCart.length === 0;
+  }
+
+  Utils.qs('#save-purchase-btn').addEventListener('click', () => {
+    if (!purchaseCart.length) return;
+    const total = purchaseCart.reduce((sum, i) => sum + i.cost * i.qty, 0);
+    const purchase = {
+      id: Utils.uid('pur'),
+      date: Utils.todayISO(),
+      supplierId: Utils.qs('#purchase-supplier').value || null,
+      items: purchaseCart.map(i => ({ productId: i.productId, name: i.name, cost: i.cost, qty: i.qty })),
+      total: Number(total.toFixed(2))
+    };
+    Storage.Purchases.add(purchase);
+    purchaseCart.forEach(i => {
+      Inventory.stockIn(i.productId, i.qty, 'Purchase received', purchase.id);
+      Storage.Products.update(i.productId, { cost: i.cost });
+    });
+    Utils.playChime('success');
+    Utils.toast('Purchase recorded — stock updated in real time!', 'success');
+    purchaseCart = [];
+    renderPurchaseCart();
+    populateProductSelectForPurchase();
+    renderPurchaseHistory();
+  });
+
+  function renderPurchaseHistory() {
+    const tbody = Utils.qs('#purchases-tbody');
+    const suppliers = Storage.Suppliers.all();
+    const purchases = Storage.Purchases.all();
+    if (!purchases.length) {
+      tbody.innerHTML = `<tr><td colspan="4"><div class="table-empty">No purchases recorded yet.</div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = purchases.map(p => {
+      const sup = suppliers.find(s => s.id === p.supplierId);
+      const itemCount = p.items.reduce((n, i) => n + i.qty, 0);
+      return `
+      <tr>
+        <td>${Utils.formatDateTime(p.date)}</td>
+        <td>${sup ? sup.name : '—'}</td>
+        <td class="mono">${itemCount} item${itemCount === 1 ? '' : 's'}</td>
+        <td class="mono"><strong>${Utils.currency(p.total)}</strong></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // Real-time synchronization
+  Storage.on('products_changed', () => populateProductSelectForPurchase());
+  Storage.on('stock_changed', () => populateProductSelectForPurchase());
+  Storage.on('purchases_changed', () => renderPurchaseHistory());
+  Storage.on('suppliers_changed', () => populateSupplierSelect());
+  Storage.on('all_changed', () => {
+    populateSupplierSelect();
+    populateProductSelectForPurchase();
+    renderPurchaseHistory();
+  });
+
+  populateSupplierSelect();
+  populateProductSelectForPurchase();
+  renderPurchaseCart();
+  renderPurchaseHistory();
+</script>
+</body>
+</html>

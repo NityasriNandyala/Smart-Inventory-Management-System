@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign In · Smart Inventory Management System</title>
+<meta name="description" content="Sign in to Smart Inventory Management System – real-time stock, sales, and purchase management.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/responsive.css">
+<style>
+  /* ─── Auth Layout ─── */
+  body { margin: 0; min-height: 100vh; }
+
+  .auth-split {
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* ── Left hero panel ── */
+  .auth-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, #0F172A 0%, #1E3A8A 55%, #0F766E 100%);
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  .auth-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 80%, rgba(37,99,235,0.35) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 20%, rgba(15,118,110,0.30) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  /* floating decorative rings */
+  .hero-ring {
+    position: absolute;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.06);
+    pointer-events: none;
+  }
+  .hero-ring-1 { width: 480px; height: 480px; top: -160px; right: -160px; }
+  .hero-ring-2 { width: 340px; height: 340px; bottom: -100px; left: -100px; }
+  .hero-ring-3 { width: 220px; height: 220px; top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 420px;
+  }
+
+  .hero-logo-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 160px;
+    height: 160px;
+    background: rgba(255,255,255,0.10);
+    border: 2px solid rgba(255,255,255,0.18);
+    border-radius: 28px;
+    margin-bottom: 28px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.15);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .hero-logo-wrap:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.20);
+  }
+  .hero-logo-wrap img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.30));
+  }
+
+  .hero-brand-name {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    margin: 0 0 6px;
+    letter-spacing: -0.3px;
+  }
+
+  .hero-brand-sub {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.60);
+    margin: 0 0 36px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .hero-features {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: left;
+  }
+  .hero-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.10);
+    border-radius: 10px;
+    padding: 12px 14px;
+    transition: background 0.2s;
+  }
+  .hero-feature:hover { background: rgba(255,255,255,0.10); }
+  .hero-feature-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    line-height: 1;
+    margin-top: 1px;
+  }
+  .hero-feature-text strong {
+    display: block;
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .hero-feature-text span {
+    font-size: 12px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.4;
+  }
+
+  /* ── Right form panel ── */
+  .auth-form-panel {
+    width: 440px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 40px;
+    background: var(--paper);
+    overflow-y: auto;
+  }
+
+  .auth-form-inner {
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .auth-form-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+  .auth-form-logo img {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+  }
+  .auth-form-logo-text {
+    line-height: 1.2;
+  }
+  .auth-form-logo-text strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 16px;
+    color: var(--ink);
+  }
+  .auth-form-logo-text span {
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .auth-heading { font-size: 22px; margin: 0 0 4px; }
+  .auth-subhead { font-size: 13.5px; color: var(--ink-soft); margin: 0 0 24px; }
+
+  .divider-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+  .divider-label::before, .divider-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  .demo-pills {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .demo-btn {
+    flex: 1;
+    font-size: 12px;
+    padding: 7px 10px;
+    border: 1px dashed var(--line-strong);
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    border-radius: var(--radius-s);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    font-family: var(--font-body);
+    font-weight: 500;
+  }
+  .demo-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .password-wrap { position: relative; }
+  .toggle-pwd {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--ink-faint);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 4px;
+    line-height: 1;
+    transition: color 0.15s;
+  }
+  .toggle-pwd:hover { color: var(--ink); }
+
+  .remember-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    font-size: 13px;
+  }
+  .remember-row label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-weight: 400;
+    color: var(--ink-soft);
+  }
+  .remember-row label input { width: auto; }
+  .remember-row a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 12.5px;
+  }
+  .remember-row a:hover { text-decoration: underline; }
+
+  .auth-footer {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 13.5px;
+    color: var(--ink-soft);
+  }
+  .auth-footer a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .auth-footer a:hover { text-decoration: underline; }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .auth-split { flex-direction: column; }
+    .auth-hero {
+      min-height: 200px;
+      padding: 32px 24px;
+    }
+    .hero-features { display: none; }
+    .hero-logo-wrap { width: 100px; height: 100px; margin-bottom: 16px; }
+    .hero-logo-wrap img { width: 74px; height: 74px; }
+    .hero-brand-name { font-size: 20px; }
+    .hero-brand-sub { margin-bottom: 0; }
+    .auth-form-panel { width: 100%; padding: 32px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="auth-split">
+
+  <!-- ── Left hero panel ── -->
+  <div class="auth-hero">
+    <div class="hero-ring hero-ring-1"></div>
+    <div class="hero-ring hero-ring-2"></div>
+    <div class="hero-ring hero-ring-3"></div>
+
+    <div class="hero-content">
+      <div class="hero-logo-wrap">
+        <img src="assets/images/logo.png" alt="Smart Inventory Logo">
+      </div>
+      <h1 class="hero-brand-name">Smart Inventory</h1>
+      <p class="hero-brand-sub">Management System</p>
+
+      <div class="hero-features">
+        <div class="hero-feature">
+          <div class="hero-feature-icon">📦</div>
+          <div class="hero-feature-text">
+            <strong>Real-Time Stock Tracking</strong>
+            <span>Monitor inventory levels across all products instantly — no refresh needed.</span>
+          </div>
+        </div>
+        <div class="hero-feature">
+          <div class="hero-feature-icon">📊</div>
+          <div class="hero-feature-text">
+            <strong>Sales & Purchase Analytics</strong>
+            <span>Visual dashboards and reports for smarter business decisions.</span>
+          </div>
+        </div>
+        <div class="hero-feature">
+          <div class="hero-feature-icon">🔔</div>
+          <div class="hero-feature-text">
+            <strong>Low Stock Alerts</strong>
+            <span>Get instant notifications when items drop below reorder thresholds.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Right form panel ── -->
+  <div class="auth-form-panel">
+    <div class="auth-form-inner">
+
+      <div class="auth-form-logo">
+        <img src="assets/images/logo.png" alt="Logo">
+        <div class="auth-form-logo-text">
+          <strong>Smart Inventory</strong>
+          <span>Management System</span>
+        </div>
+      </div>
+
+      <h2 class="auth-heading">Welcome back</h2>
+      <p class="auth-subhead">Sign in to access your inventory dashboard.</p>
+
+      <div class="divider-label">Quick demo access</div>
+      <div class="demo-pills">
+        <button type="button" class="demo-btn" id="demo-admin">⚡ Admin Demo</button>
+        <button type="button" class="demo-btn" id="demo-manager">⚡ Manager Demo</button>
+      </div>
+
+      <form id="login-form">
+        <div class="field">
+          <label for="email">Email address</label>
+          <input type="email" id="email" required placeholder="admin@smartinventory.com" autofocus>
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <div class="password-wrap">
+            <input type="password" id="password" required placeholder="••••••••">
+            <button type="button" class="toggle-pwd" id="toggle-pwd" title="Show password">👁</button>
+          </div>
+        </div>
+
+        <div class="remember-row">
+          <label>
+            <input type="checkbox" id="remember-me" checked> Remember me
+          </label>
+          <a href="signup.html">Create account</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="login-btn"
+          style="width:100%; padding:11px; font-size:15px; font-weight:600;">
+          Sign in →
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="signup.html">Sign up for free</a>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script src="js/utils.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script>
+  // Theme on auth pages
+  (function() {
+    try {
+      const s = JSON.parse(localStorage.getItem('sims_settings') || '{}');
+      if (s.theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    } catch(e) {}
+  })();
+
+  // If already logged in, redirect to dashboard
+  if (Auth.getCurrentUser()) {
+    window.location.href = 'index.html';
+  }
+
+  // Toggle password visibility
+  const pwdInput = Utils.qs('#password');
+  const toggleBtn = Utils.qs('#toggle-pwd');
+  toggleBtn.addEventListener('click', () => {
+    const isPwd = pwdInput.type === 'password';
+    pwdInput.type = isPwd ? 'text' : 'password';
+    toggleBtn.textContent = isPwd ? '🔒' : '👁';
+  });
+
+  // Demo auto-fill buttons
+  Utils.qs('#demo-admin').addEventListener('click', () => {
+    Utils.qs('#email').value = 'admin@smartinventory.com';
+    Utils.qs('#password').value = 'admin123';
+    Utils.toast('Admin credentials loaded — click Sign in', 'info');
+  });
+
+  Utils.qs('#demo-manager').addEventListener('click', () => {
+    Utils.qs('#email').value = 'manager@smartinventory.com';
+    Utils.qs('#password').value = 'manager123';
+    Utils.toast('Manager credentials loaded — click Sign in', 'info');
+  });
+
+  // Login submission
+  Utils.qs('#login-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = Utils.qs('#email').value;
+    const password = Utils.qs('#password').value;
+    const btn = Utils.qs('#login-btn');
+
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+
+    try {
+      const user = await Auth.login(email, password);
+      Utils.playChime && Utils.playChime('success');
+      Utils.toast(`Welcome back, ${user.name}!`, 'success');
+      setTimeout(() => { window.location.href = 'index.html'; }, 500);
+    } catch (err) {
+      Utils.playChime && Utils.playChime('alert');
+      Utils.toast(err.message || 'Login failed', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Sign in →';
+    }
+  });
+</script>
+</body>
+</html>
