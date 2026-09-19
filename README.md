@@ -15,7 +15,7 @@ It is designed not only as an inventory dashboard but as a foundation that can b
 ## 🚀 Try the Application
 
 **Live Application:**
-`https://smart-inventory-management-system-sri.netlify.app/`
+https://smart-inventory-management-system-sri.netlify.app/
 
 The frontend is deployed on **Netlify**, allowing users to open and interact with the application directly from a modern web browser.
 
@@ -1551,7 +1551,7 @@ This separation is intentional so the project can evolve from a browser-based pr
 
 ### GitHub
 
-`https://github.com/NityasriNandyala`
+https://github.com/NityasriNandyala
 
 ---
 
